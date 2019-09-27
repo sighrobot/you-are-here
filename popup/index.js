@@ -1,5 +1,6 @@
 const EDGE_TEXT = {
   new_tab: 'Opened link in a new tab',
+  new_window: 'Opened link in a new window',
   typed: 'Typed into the address bar',
   reload: 'Reloaded the page',
 }
@@ -110,18 +111,32 @@ chrome.runtime.sendMessage(true, (response) => {
         pathEl.appendChild(msg)
       } else {
         const numNodes = node.predecessors().nodes().length + 1
-        const numTabs = node.predecessors('edge[transition = "new_tab"]').length + 1
+        const numTabs = node.predecessors('edge[transition = "new_tab"]').length
+        const numWindows = node.predecessors('edge[transition = "new_window"]').length
+
+        const realNumTabs = numTabs + 1 + numWindows
+        const realNumWindows = numWindows + 1
 
         document.querySelector('#path')
 
         const pathSummary = document.createElement('p')
-        pathSummary.innerHTML = `This path includes ${numNodes} page${numNodes === 1 ? '' : 's'} and ${numTabs} tab${numTabs === 1 ? '' : 's'}.`
+        pathSummary.innerHTML = `This path includes ${numNodes} page${numNodes === 1 ? '' : 's'}, ${realNumTabs} tab${realNumTabs === 1 ? '' : 's'}, and ${realNumWindows} window${realNumWindows === 1 ? '' : 's'}.`
         document.querySelector('header').appendChild(pathSummary)
 
         const path = node.predecessors().toArray()
 
         path.unshift(node)
-        path.map(p => p.data()).forEach(renderElement)
+
+        path
+        .map(p => p.data())
+        .filter((p, idx, path) => {
+          const isEdge = !p.title
+          const titleUnique = p.title !== (path[idx - 2] || {}).title
+          const solo = !((path[idx-1] || {}).title) && !((path[idx+1] || {}).title)
+
+          return isEdge || (titleUnique && solo)
+        })
+        .forEach(renderElement)
       }
     })
 })
@@ -129,25 +144,22 @@ chrome.runtime.sendMessage(true, (response) => {
 const getDomain = (url) => ((url || '').split('://')[1] || '').split('/')[0]
 
 const renderElement = (e, idx, path) => {
+  const opacity = 1 - (idx / path.length) * 0.5
   const { title, transition, url } = e
 
-  if (url && title !== (path[idx - 2] || {}).title) {
+  if (url) {
     const article = document.createElement('article')
+    const favIcon = createFaviconImg(url)
 
-    if (
-      (getDomain(url) !== getDomain((path[idx + 2] || {}).url))
-      || (idx === 0)
-    ) {
-      const favIcon = createFaviconImg(url)
-
-      article.className = 'primary'
-      article.appendChild(favIcon)
-    }
+    article.className = 'primary'
+    article.appendChild(favIcon)
+    article.style.opacity = opacity
 
     const pageTitle = document.createElement('a')
 
     pageTitle.href = e.url
     pageTitle.innerHTML = getLabelByType(e)
+
     article.appendChild(pageTitle)
 
     document.querySelector('section').appendChild(article)
@@ -157,17 +169,19 @@ const renderElement = (e, idx, path) => {
 
       aside.innerHTML = EDGE_TEXT[transition]
       aside.className = transition
+      aside.style.opacity = opacity
       document.querySelector('section').appendChild(aside)
     }
 
     return
   }
 
-  if (transition !== 'link' && transition !== 'generated') {
-    const aside = document.createElement('aside')
+    if (transition !== 'link' && transition !== 'generated') {
+      const aside = document.createElement('aside')
 
-    aside.innerHTML = EDGE_TEXT[transition]
-    aside.className = transition
-    document.querySelector('section').appendChild(aside)
-  }
+      aside.innerHTML = EDGE_TEXT[transition]
+      aside.className = transition
+      aside.style.opacity = opacity
+      document.querySelector('section').appendChild(aside)
+    }
 }
