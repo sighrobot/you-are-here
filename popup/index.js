@@ -135,7 +135,7 @@ const renderElement = (e, idx, path) => {
     const article = document.createElement('article')
 
     if (
-      (getDomain(url) !== getDomain((path[idx - 2] || {}).url))
+      (getDomain(url) !== getDomain((path[idx + 2] || {}).url))
       || (idx === 0)
     ) {
       const favIcon = createFaviconImg(url)
