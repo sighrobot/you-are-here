@@ -1,6 +1,6 @@
 {
     "name": "You Are Here",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Find out exactly how you got to any web page.",
     "permissions": [
       "history",
@@ -21,7 +21,6 @@
       "default_popup": "popup/index.html"
     },
     "icons": {
-
      "128": "favicon.png"
     },
     "manifest_version": 2
