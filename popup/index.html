@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        width: 360px;
+      }
+
+      body {
+        margin: 0;
+      }
+
+      section {
+        padding: 16px;
+        background: linear-gradient(to bottom, hotpink, white);
+        background: white;
+      }
+
+      #cy {
+        height: 600px;
+        width: 360px;
+        display: block;
+        display: none;
+      }
+
+      .window {
+        padding: 8px;
+      }
+
+      .tab {
+        border: 1px solid #ddd;
+        padding: 4px;
+      }
+
+      article {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+        padding-left: 28px;
+        position: relative;
+      }
+
+      aside {
+        position: relative;
+        color: rgba(0,0,0,0.35);
+        font-style: italic;
+        padding: 10px 0;
+        padding-left: 28px;
+      }
+
+      article:not(.primary):before {
+        position: absolute;
+        height: 100%;
+        width: 1px;
+        border-left: 1px solid hotpink;
+        top: 0;
+        left: 8px;
+        content: '';
+      }
+
+      aside:not(.typed):before {
+        position: absolute;
+        height: 100%;
+        width: 1px;
+        border-left: 1px dashed hotpink;
+        top: 0;
+        left: 8px;
+        content: '';
+      }
+
+      aside.typed:before {
+        position: absolute;
+        height: 100%;
+        width: 1px;
+        border:none;
+        background:linear-gradient(to bottom, hotpink, transparent, hotpink);
+        top: 0;
+        left: 8px;
+        content: '';
+      }
+
+      article img {
+        flex-shrink: 0;
+        height: 16px;
+        width: 16px;
+        position: absolute;
+        left: 0;
+      }
+
+      article a {
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+        line-height: 1;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        margin: 0;
+      }
+
+      article a:hover {
+        text-decoration: underline;
+      }
+
+      article:first-of-type a {
+        font-weight: 800;
+      }
+
+      h1 {
+        font-size: inherit;
+        margin: -10px 0;
+        /* margin-top: -10px; */
+        padding: 10px 0 10px 28px;
+      }
+
+      header {
+        padding: 16px;
+        border-bottom: 1px dotted black;
+        background: linear-gradient(to bottom left, hotpink, pink);
+      }
+
+      header p {
+        margin: 0;
+        margin-top: 10px;
+        padding-left: 28px;
+      }
+
+      .pulsating-circle {
+        transform: translateX(0) translateY(2.5px);
+        width: 10px;
+        height: 10px;
+      }
+
+      .pulsating-circle:before {
+        content: '';
+        position: relative;
+        display: block;
+        left: -24px;
+        width: 300%;
+        height: 300%;
+        box-sizing: border-box;
+        margin-left: -100%;
+        margin-top: -100%;
+        border-radius: 100%;
+        background-color: black;
+        animation: pulse-ring 4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      }
+
+      .pulsating-circle:after {
+        content: '';
+        position: absolute;
+        left: -24px;
+        top: 10px;
+        display: block;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        border-radius: 100%;
+      }
+
+      @keyframes pulse-ring {
+        0% {
+          transform: scale(.33);
+        }
+        80%, 100% {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cy"></div>
+    <header>
+      <h1>
+        <div class="pulsating-circle"></div>
+        <span>You are here.</span>
+      </h1>
+    </header>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.8.2/cytoscape.min.js"></script>
+  <script src="./index.js"></script>
+</html>
