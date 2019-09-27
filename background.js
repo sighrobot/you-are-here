@@ -31,16 +31,24 @@
             const visitsInTab2 = app.elements.filter((e) => e.data.tabId === targetDetails.sourceTabId)
             const sourceV = visitsInTab2[visitsInTab2.length - 1]
 
-            app.addToGraph(
-              null,
-              {
-                source: sourceV.data.id,
-                target: v.id,
-                transition: 'new_tab',
-              },
-            )
+            let sameWindow = true
 
-            delete app.navTargetedTabs[tabId]
+            chrome.tabs.get(targetDetails.sourceTabId, (targetSourceTab) => {
+              chrome.tabs.get(targetDetails.tabId, (targetTab) => {
+                sameWindow = targetSourceTab.windowId === targetTab.windowId
+
+                app.addToGraph(
+                  null,
+                  {
+                    source: sourceV.data.id,
+                    target: v.id,
+                    transition: sameWindow ? 'new_tab' : 'new_window',
+                  },
+                )
+
+                delete app.navTargetedTabs[tabId]
+              })
+            })
           }
         }
       }
